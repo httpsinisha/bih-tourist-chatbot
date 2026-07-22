@@ -1,0 +1,12 @@
+pandas
+numpy
+pyyaml
+pydantic
+requests
+beautifulsoup4
+lxml
+pytest
+matplotlib
+gradio
+sentence-transformers
+faiss-cpu
