@@ -1,0 +1,73 @@
+destination_id,name,region,entity_type,priority
+sarajevo,Sarajevo,Sarajevo i okolina,city,core
+ilidza_i_vrelo_bosne,Ilidža i Vrelo Bosne,Sarajevo i okolina,mixed,core
+istocno_sarajevo,Istočno sarajevo,Sarajevo i okolina,city,secondary
+pale_i_jahorina,Pale i Jahorina,Sarajevo i okolina,mixed,core
+trnovo_i_bjelasnica,Trnovo i Bjelašnica,Sarajevo i okolina,mixed,secondary
+visoko,Visoko,Sarajevo i okolina,city,core
+fojnica,Fojnica,Sarajevo i okolina,town,secondary
+kresevo,Kreševo,Sarajevo i okolina,town,secondary
+kiseljak,Kiseljak,Sarajevo i okolina,town,secondary
+mostar,Mostar,Hercegovina i jugozapad,city,core
+blagaj,Blagaj,Hercegovina i jugozapad,town,core
+pocitelj,Počitelj,Hercegovina i jugozapad,town,secondary
+capljina,Čapljina,Hercegovina i jugozapad,city,secondary
+ljubuski_i_vodopad_kravica,Ljubuški i vodopad Kravica,Hercegovina i jugozapad,mixed,core
+medjugorje,Međugorje,Hercegovina i jugozapad,town,secondary
+citluk,Čitluk,Hercegovina i jugozapad,town,secondary
+neum,Neum,Hercegovina i jugozapad,city,core
+stolac,Stolac,Hercegovina i jugozapad,city,secondary
+trebinje,Trebinje,Hercegovina i jugozapad,city,core
+bileca,Bileća,Hercegovina i jugozapad,city,secondary
+gacko,Gacko,Hercegovina i jugozapad,city,secondary
+nevesinje,Nevesinje,Hercegovina i jugozapad,city,secondary
+konjic,Konjic,Hercegovina i jugozapad,city,core
+jablanica,Jablanica,Hercegovina i jugozapad,town,secondary
+prozor_rama,Prozor-Rama,Hercegovina i jugozapad,town,secondary
+livno,Livno,Hercegovina i jugozapad,town,secondary
+tomislavgrad,Tomislavgrad,Hercegovina i jugozapad,town,secondary
+kupres,Kupres,Hercegovina i jugozapad,town,secondary
+posusje,Posušje,Hercegovina i jugozapad,city,core
+grude,Grude,Hercegovina i jugozapad,town,secondary
+siroki_brijeg,Široki Brijeg,Hercegovina i jugozapad,city,secondary
+blidinje,Blidinje,Hercegovina i jugozapad,nature_area,core
+travnik,Travnik,Srednja i sjeverna Bosna,city,core
+jajce,Jajce,Srednja i sjeverna Bosna,city,core
+donji_vakuf,Donji Vakuf,Srednja i sjeverna Bosna,city,secondary
+bugojno,Bugojno,Srednja i sjeverna Bosna,city,secondary
+vitez,Vitez,Srednja i sjeverna Bosna,city,secondary
+zenica,Zenica,Srednja i sjeverna Bosna,city,core
+kakanj,Kakanj,Srednja i sjeverna Bosna,city,core
+tesanj,Tešanj,Srednja i sjeverna Bosna,town,secondary
+maglaj,Maglaj,Srednja i sjeverna Bosna,city,secondary
+doboj,Doboj,Srednja i sjeverna Bosna,city,core
+prokosko_jezero,Prokoško jezero,Srednja i sjeverna Bosna,nature_area,core
+tuzla,Tuzla,Sjeveroistočna i istočna Bosna,city,core
+lukavac,Lukavac,Sjeveroistočna i istočna Bosna,town,secondary
+gracanica,Gračanica,Sjeveroistočna i istočna Bosna,town,secondary
+srebrenik,Srebrenik,Sjeveroistočna i istočna Bosna,town,secondary
+gradacac,Gradačac,Sjeveroistočna i istočna Bosna,town,secondary
+brcko,Brčko,Sjeveroistočna i istočna Bosna,city,secondary
+bijeljina,Bijeljina,Sjeveroistočna i istočna Bosna,city,core
+zvornik,Zvornik,Sjeveroistočna i istočna Bosna,city,secondary
+srebrenica,Srebrenica,Sjeveroistočna i istočna Bosna,town,secondary
+vlasenica,Vlasenica,Sjeveroistočna i istočna Bosna,town,secondary
+visegrad,Višegrad,Sjeveroistočna i istočna Bosna,city,core
+rogatica,Rogatica,Sjeveroistočna i istočna Bosna,town,secondary
+foca,Foča,Sjeveroistočna i istočna Bosna,city,core
+tjentiste_i_np_sutjeska,Tjentište i NP Sutjeska,Sjeveroistočna i istočna Bosna,nature_area,core
+gorazde,Goražde,Sjeveroistočna i istočna Bosna,city,secondary
+banja_luka,Banja Luka,Krajina i zapadna Bosna,city,core
+laktasi,Laktaši,Krajina i zapadna Bosna,town,secondary
+prijedor,Prijedor,Krajina i zapadna Bosna,city,secondary
+kozara_i_np_kozara,Kozara i NP Kozara,Krajina i zapadna Bosna,nature_area,core
+sanski_most,Sanski Most,Krajina i zapadna Bosna,town,secondary
+kljuc,Ključ,Krajina i zapadna Bosna,town,secondary
+bihac,Bihać,Krajina i zapadna Bosna,city,core
+bosanska_krupa,Bosanska Krupa,Krajina i zapadna Bosna,city,core
+cazin,Cazin,Krajina i zapadna Bosna,town,secondary
+velika_kladusa,Velika Kladuša,Krajina i zapadna Bosna,town,secondary
+martin_brod_i_np_una,Martin Broj i NP Una,Krajina i zapadna Bosna,mixed,core
+sipovo_i_janjske_otoke,Šipovo i Janjske otoke,Krajina i zapadna Bosna,mixed,core
+mrkonjic_grad,Mrkonjić Grad,Krajina i zapadna Bosna,city,secondary
+ribnik,Ribnik,Krajina i zapadna Bosna,town,core
