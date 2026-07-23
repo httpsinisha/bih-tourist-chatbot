@@ -1,5 +1,13 @@
-# BiH turistički chatbot
+## Okruženje
 
-Cilj projekta je razviti turističkog chatbota za Bosnu i Hercegovinu korištenjem modela Qwen2.5-1.5B-Instruct, QLoRA fine-tuninga, RAG-a i Gradio interfejsa.
+Lokalni razvoj koristi Python 3.11 i izolovano virtualno okruženje
+`.venv`.
 
-**Status:** U izradi.
+GPU notebookovi pokreću se u Google Colabu. Tačne verzije paketa
+iz uspješno provjerenog Colab okruženja nalaze se u datoteci
+`requirements-lock.txt`.
+
+Instalacija u Colabu:
+
+```bash
+python -m pip install -r requirements-lock.txt
