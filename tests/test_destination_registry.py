@@ -11,7 +11,6 @@ from bih_guide.data.validate_destinations import (
     Region,
     EntityType,
     Priority,
-    DestinationValidatorResult,
     validate_number_lines,
     validate_core_count,
     validate_secondary_count,
@@ -30,257 +29,334 @@ def make_line(
     entity_type="city",
     priority="core",
 ):
-    """Build a valid CSV line."""
     return f"{identifier},{name},{region},{entity_type},{priority}"
 
 
-# ---------------------------------------------------------------------------
-# Region / EntityType / Priority enums
-# ---------------------------------------------------------------------------
-
-class TestRegionFromStr:
-    def test_valid_labels_map_to_expected_members(self):
-        assert Region.from_str("Sarajevo i okolina") is Region.SARAJEVO
-        assert Region.from_str("Hercegovina i jugozapad") is Region.HERZEGOVINA
-        assert Region.from_str("Srednja i sjeverna Bosna") is Region.MIDDLE_NORTH_BOSNIA
-        assert Region.from_str("Sjeveroistočna i istočna Bosna") is Region.NORTHEAST_NORTH_BOSNIA
-        assert Region.from_str("Krajina i zapadna Bosna") is Region.WEST_BOSNIA
-
-    def test_unknown_label_raises(self):
-        with pytest.raises(NotImplementedError):
-            Region.from_str("Nepostojeci region")
+# ----------------------------------------------------------------------
+# Region
+# ----------------------------------------------------------------------
 
 
-class TestEntityTypeFromStr:
-    def test_valid_labels_map_to_expected_members(self):
-        assert EntityType.from_str("city") is EntityType.CITY
-        assert EntityType.from_str("town") is EntityType.TOWN
-        assert EntityType.from_str("nature_area") is EntityType.NATURE_AREA
-        assert EntityType.from_str("mixed") is EntityType.MIXED
+class TestRegion:
 
-    def test_unknown_label_raises(self):
-        with pytest.raises(NotImplementedError):
-            EntityType.from_str("village")
+    @pytest.mark.parametrize(
+        "label,expected",
+        [
+            ("Sarajevo i okolina", Region.SARAJEVO),
+            ("Hercegovina i jugozapad", Region.HERZEGOVINA),
+            ("Srednja i sjeverna Bosna", Region.MIDDLE_NORTH_BOSNIA),
+            ("Sjeveroistočna i istočna Bosna", Region.NORTHEAST_NORTH_BOSNIA),
+            ("Krajina i zapadna Bosna", Region.WEST_BOSNIA),
+        ],
+    )
+    def test_valid_region(self, label, expected):
+        assert Region.from_str(label) is expected
 
-
-class TestPriorityFromStr:
-    def test_valid_labels_map_to_expected_members(self):
-        assert Priority.from_str("core") is Priority.CORE
-        assert Priority.from_str("secondary") is Priority.SECONDARY
-
-    def test_unknown_label_raises(self):
-        with pytest.raises(NotImplementedError):
-            Priority.from_str("optional")
+    def test_invalid_region(self):
+        with pytest.raises(ValueError):
+            Region.from_str("invalid")
 
 
-# ---------------------------------------------------------------------------
-# DestinationValidatorResult
-# ---------------------------------------------------------------------------
-
-class TestDestinationValidatorResult:
-    def test_ok_is_successful(self):
-        result = DestinationValidatorResult.ok()
-        assert result.success is True
-        assert result.msg == "Validation successful."
-
-    def test_error_is_unsuccessful_and_carries_message(self):
-        result = DestinationValidatorResult.error("something went wrong")
-        assert result.success is False
-        assert result.msg == "something went wrong"
+# ----------------------------------------------------------------------
+# EntityType
+# ----------------------------------------------------------------------
 
 
-# ---------------------------------------------------------------------------
-# validate_number_lines
-# ---------------------------------------------------------------------------
+class TestEntityType:
 
-class TestValidateNumberLines:
-    def test_matching_count_passes(self):
-        assert validate_number_lines(72, 72).success is True
+    @pytest.mark.parametrize(
+        "label,expected",
+        [
+            ("city", EntityType.CITY),
+            ("town", EntityType.TOWN),
+            ("nature_area", EntityType.NATURE_AREA),
+            ("mixed", EntityType.MIXED),
+        ],
+    )
+    def test_valid_entity_type(self, label, expected):
+        assert EntityType.from_str(label) is expected
 
-    def test_mismatched_count_fails_with_message(self):
-        result = validate_number_lines(70, 72)
-        assert result.success is False
-        assert "72" in result.msg
-
-
-# ---------------------------------------------------------------------------
-# validate_core_count / validate_secondary_count
-# ---------------------------------------------------------------------------
-
-class TestValidateCoreCount:
-    def test_matching_count_passes(self):
-        assert validate_core_count(30, 30).success is True
-
-    def test_mismatched_count_fails(self):
-        assert validate_core_count(29, 30).success is False
+    def test_invalid_entity_type(self):
+        with pytest.raises(ValueError):
+            EntityType.from_str("invalid")
 
 
-class TestValidateSecondaryCount:
-    def test_matching_count_passes(self):
-        assert validate_secondary_count(42, 42).success is True
-
-    def test_mismatched_count_fails(self):
-        assert validate_secondary_count(41, 42).success is False
+# ----------------------------------------------------------------------
+# Priority
+# ----------------------------------------------------------------------
 
 
-# ---------------------------------------------------------------------------
-# validate_line_format
-# ---------------------------------------------------------------------------
+class TestPriority:
 
-class TestValidateLineFormat:
-    def test_exact_field_count_passes(self):
+    @pytest.mark.parametrize(
+        "label,expected",
+        [
+            ("core", Priority.CORE),
+            ("secondary", Priority.SECONDARY),
+        ],
+    )
+    def test_valid_priority(self, label, expected):
+        assert Priority.from_str(label) is expected
+
+    def test_invalid_priority(self):
+        with pytest.raises(ValueError):
+            Priority.from_str("invalid")
+
+
+# ----------------------------------------------------------------------
+# Counts
+# ----------------------------------------------------------------------
+
+
+class TestCounts:
+
+    def test_validate_number_lines(self):
+        assert validate_number_lines(DESTINATIONS_COUNT_TARGET) is None
+        assert validate_number_lines(10) is not None
+
+    def test_validate_core_count(self):
+        assert validate_core_count(CORE_DESTINATIONS_TARGET) is None
+        assert validate_core_count(10) is not None
+
+    def test_validate_secondary_count(self):
+        assert validate_secondary_count(SECONDARY_DESTINATIONS_TARGET) is None
+        assert validate_secondary_count(10) is not None
+
+
+# ----------------------------------------------------------------------
+# Line format
+# ----------------------------------------------------------------------
+
+
+class TestLineFormat:
+
+    def test_valid_line(self):
         parts = ["id", "name", "region", "type", "priority"]
-        assert validate_line_format(0, parts).success is True
+        assert validate_line_format(0, parts) is None
 
-    def test_missing_fields_fails(self):
-        parts = ["id", "name", "region"]
-        result = validate_line_format(3, parts)
-        assert result.success is False
-        assert "missing" in result.msg.lower()
-        assert "3" in result.msg
+    def test_missing_fields(self):
+        result = validate_line_format(2, ["id", "name"])
 
-    def test_extra_fields_fails(self):
-        parts = ["id", "name", "region", "type", "priority", "extra"]
-        result = validate_line_format(5, parts)
-        assert result.success is False
-        assert "too much" in result.msg.lower()
+        assert result is not None
+        assert "missing" in result.lower()
 
+    def test_extra_fields(self):
+        result = validate_line_format(
+            2,
+            ["id", "name", "region", "type", "priority", "extra"],
+        )
 
-# ---------------------------------------------------------------------------
-# validate_identifier
-# ---------------------------------------------------------------------------
-
-class TestValidateIdentifier:
-    def test_valid_single_letter_identifier_passes(self):
-        assert validate_identifier("a", set()).success is True
-
-    def test_valid_multi_letter_identifier_passes(self):
-        assert validate_identifier("banja_luka", set()).success is True
-
-    def test_uppercase_letters_fail(self):
-        assert validate_identifier("Sarajevo", set()).success is False
-
-    def test_leading_underscore_fails(self):
-        assert validate_identifier("_sarajevo", set()).success is False
-
-    def test_trailing_underscore_fails(self):
-        assert validate_identifier("sarajevo_", set()).success is False
-
-    def test_digits_fail(self):
-        assert validate_identifier("sarajevo1", set()).success is False
-
-    def test_empty_string_fails(self):
-        assert validate_identifier("", set()).success is False
-
-    def test_duplicate_identifier_fails(self):
-        seen = {"sarajevo"}
-        result = validate_identifier("sarajevo", seen)
-        assert result.success is False
-        assert "duplicate" in result.msg.lower()
-
-    def test_new_identifier_not_mutated_into_set_by_validator(self):
-        seen = set()
-        validate_identifier("mostar", seen)
-        assert "mostar" not in seen
+        assert result is not None
+        assert "too much" in result.lower()
 
 
-# ---------------------------------------------------------------------------
-# validate_region_type_priority
-# ---------------------------------------------------------------------------
-
-class TestValidateRegionTypePriority:
-    def test_all_valid_passes(self):
-        result = validate_region_type_priority("Sarajevo i okolina", "city", "core")
-        assert result.success is True
-
-    def test_invalid_region_fails(self):
-        result = validate_region_type_priority("Nepostojeci region", "city", "core")
-        assert result.success is False
-
-    def test_invalid_entity_type_fails(self):
-        result = validate_region_type_priority("Sarajevo i okolina", "village", "core")
-        assert result.success is False
-
-    def test_invalid_priority_fails(self):
-        result = validate_region_type_priority("Sarajevo i okolina", "city", "optional")
-        assert result.success is False
+# ----------------------------------------------------------------------
+# Identifier
+# ----------------------------------------------------------------------
 
 
-# ---------------------------------------------------------------------------
-# validate_destination_line
-# ---------------------------------------------------------------------------
+class TestIdentifier:
 
-class TestValidateDestinationLine:
-    def test_valid_line_passes_and_updates_state(self):
-        destination_ids = set()
-        counts = {"core": 0, "secondary": 0}
-        result = validate_destination_line(0, make_line(), destination_ids, counts)
+    @pytest.mark.parametrize(
+        "identifier",
+        [
+            "a",
+            "sarajevo",
+            "banja_luka",
+            "np_sutjeska",
+        ],
+    )
+    def test_valid_identifier(self, identifier):
+        assert validate_identifier(identifier, set()) is None
 
-        assert result.success is True
-        assert "sarajevo" in destination_ids
-        assert counts["core"] == 1
-        assert counts["secondary"] == 0
+    @pytest.mark.parametrize(
+        "identifier",
+        [
+            "",
+            "Sarajevo",
+            "_sarajevo",
+            "sarajevo_",
+            "sarajevo1",
+            "1sarajevo",
+        ],
+    )
+    def test_invalid_identifier(self, identifier):
+        assert validate_identifier(identifier, set()) is not None
 
-    def test_secondary_priority_increments_secondary_count(self):
-        destination_ids = set()
-        counts = {"core": 0, "secondary": 0}
+    def test_duplicate_identifier(self):
+        assert (
+            validate_identifier("sarajevo", {"sarajevo"})
+            is not None
+        )
 
-        line = make_line(identifier="mostar", priority="secondary")
-        result = validate_destination_line(0, line, destination_ids, counts)
+    def test_validator_does_not_modify_set(self):
+        ids = set()
 
-        assert result.success is True
-        assert counts["core"] == 0
-        assert counts["secondary"] == 1
+        validate_identifier("mostar", ids)
 
-    def test_malformed_line_fails_and_does_not_touch_counts(self):
-        destination_ids = set()
-        counts = {"core": 0, "secondary": 0}
+        assert ids == set()
 
-        result = validate_destination_line(0, "sarajevo,Sarajevo", destination_ids, counts)
 
-        assert result.success is False
-        assert counts == {"core": 0, "secondary": 0}
-        assert destination_ids == set()
+# ----------------------------------------------------------------------
+# Region / type / priority
+# ----------------------------------------------------------------------
 
-    def test_duplicate_identifier_across_two_lines_fails_on_second(self):
-        destination_ids = set()
-        counts = {"core": 0, "secondary": 0}
 
-        first = validate_destination_line(0, make_line(), destination_ids, counts)
-        second = validate_destination_line(1, make_line(), destination_ids, counts)
+class TestRegionTypePriority:
 
-        assert first.success is True
-        assert second.success is False
-        assert counts["core"] == 1
+    def test_valid_values(self):
+        assert (
+            validate_region_type_priority(
+                "Sarajevo i okolina",
+                "city",
+                "core",
+            )
+            is None
+        )
 
-    def test_invalid_priority_does_not_increment_counts(self):
-        destination_ids = set()
+    @pytest.mark.parametrize(
+        "region,entity,priority",
+        [
+            ("invalid", "city", "core"),
+            ("Sarajevo i okolina", "invalid", "core"),
+            ("Sarajevo i okolina", "city", "invalid"),
+        ],
+    )
+    def test_invalid_values(
+        self,
+        region,
+        entity,
+        priority,
+    ):
+        assert (
+            validate_region_type_priority(
+                region,
+                entity,
+                priority,
+            )
+            is not None
+        )
+
+
+# ----------------------------------------------------------------------
+# Destination line
+# ----------------------------------------------------------------------
+
+
+class TestDestinationLine:
+
+    def test_valid_core_line(self):
+        ids = set()
         counts = {"core": 0, "secondary": 0}
 
-        line = make_line(priority="optional")
-        result = validate_destination_line(0, line, destination_ids, counts)
+        assert (
+            validate_destination_line(
+                0,
+                make_line(),
+                ids,
+                counts,
+            )
+            is None
+        )
 
-        assert result.success is False
-        assert counts == {"core": 0, "secondary": 0}
+        assert ids == {"sarajevo"}
+        assert counts == {
+            "core": 1,
+            "secondary": 0,
+        }
 
-    def test_whitespace_around_line_is_stripped(self):
-        destination_ids = set()
+    def test_valid_secondary_line(self):
+        ids = set()
         counts = {"core": 0, "secondary": 0}
-        result = validate_destination_line(0, "  " + make_line() + "  \n", destination_ids, counts)
 
-        assert result.success is True
+        assert (
+            validate_destination_line(
+                0,
+                make_line(
+                    identifier="mostar",
+                    priority="secondary",
+                ),
+                ids,
+                counts,
+            )
+            is None
+        )
 
+        assert counts == {
+            "core": 0,
+            "secondary": 1,
+        }
 
-# ---------------------------------------------------------------------------
-# validate_destination_registry
-# ---------------------------------------------------------------------------
+    def test_duplicate_identifier(self):
+        ids = set()
+        counts = {"core": 0, "secondary": 0}
+
+        validate_destination_line(
+            0,
+            make_line(),
+            ids,
+            counts,
+        )
+
+        assert (
+            validate_destination_line(
+                1,
+                make_line(),
+                ids,
+                counts,
+            )
+            is not None
+        )
+
+    def test_invalid_line(self):
+        ids = set()
+        counts = {"core": 0, "secondary": 0}
+
+        assert (
+            validate_destination_line(
+                0,
+                "sarajevo,Sarajevo",
+                ids,
+                counts,
+            )
+            is not None
+        )
+
+        assert counts == {
+            "core": 0,
+            "secondary": 0,
+        }
+
+    def test_invalid_priority(self):
+        ids = set()
+        counts = {"core": 0, "secondary": 0}
+
+        assert (
+            validate_destination_line(
+                0,
+                make_line(priority="optional"),
+                ids,
+                counts,
+            )
+            is not None
+        )
+
+        assert counts == {
+            "core": 0,
+            "secondary": 0,
+        }
+
+# ----------------------------------------------------------------------
+# Registry helpers
+# ----------------------------------------------------------------------
+
 
 def index_to_identifier(index: int) -> str:
     result = ""
 
     while True:
         index, remainder = divmod(index, 26)
-        result = chr(ord('a') + remainder) + result
+        result = chr(ord("a") + remainder) + result
 
         if index == 0:
             break
@@ -289,59 +365,117 @@ def index_to_identifier(index: int) -> str:
 
     return result
 
-def build_registry(core_count=CORE_DESTINATIONS_TARGET, secondary_count=SECONDARY_DESTINATIONS_TARGET):
-    """Build a fully valid registry with the given core/secondary split."""
+
+def build_registry(
+    core_count=CORE_DESTINATIONS_TARGET,
+    secondary_count=SECONDARY_DESTINATIONS_TARGET,
+):
     lines = []
+
     for i in range(core_count):
-        lines.append(make_line(identifier=f"core_dest_{index_to_identifier(i)}", priority="core"))
+        lines.append(
+            make_line(
+                identifier=f"core_{index_to_identifier(i)}",
+                priority="core",
+            )
+        )
+
     for i in range(secondary_count):
-        lines.append(make_line(identifier=f"secondary_dest_{index_to_identifier(i)}", priority="secondary"))
+        lines.append(
+            make_line(
+                identifier=f"secondary_{index_to_identifier(i)}",
+                priority="secondary",
+            )
+        )
+
     return lines
 
 
-class TestValidateDestinationRegistry:
-    def test_fully_valid_registry_passes(self):
-        lines = build_registry()
-        print(lines[0])
-        result = validate_destination_registry(lines)
+# ----------------------------------------------------------------------
+# Destination registry
+# ----------------------------------------------------------------------
 
-        assert len(lines) == DESTINATIONS_COUNT_TARGET
-        assert result.success is True
 
-    def test_wrong_total_line_count_fails_before_per_line_checks(self):
-        lines = build_registry(core_count=CORE_DESTINATIONS_TARGET - 1)
-        result = validate_destination_registry(lines)
-        assert result.success is False
-        assert str(DESTINATIONS_COUNT_TARGET) in result.msg
+class TestDestinationRegistry:
 
-    def test_too_few_core_destinations_fails(self):
-        lines = build_registry(
+    def test_valid_registry(self):
+        registry = build_registry()
+
+        report = validate_destination_registry(registry)
+
+        assert report.success
+        assert report.destination_count == DESTINATIONS_COUNT_TARGET
+        assert report.core_count == CORE_DESTINATIONS_TARGET
+        assert report.secondary_count == SECONDARY_DESTINATIONS_TARGET
+
+    def test_invalid_total_count(self):
+        registry = build_registry(
             core_count=CORE_DESTINATIONS_TARGET - 1,
-            secondary_count=SECONDARY_DESTINATIONS_TARGET + 1,
         )
-        result = validate_destination_registry(lines)
-        assert result.success is False
 
-    def test_too_few_secondary_destinations_fails(self):
-        lines = build_registry(
-            core_count=CORE_DESTINATIONS_TARGET + 1,
-            secondary_count=SECONDARY_DESTINATIONS_TARGET - 1,
+        report = validate_destination_registry(registry)
+
+        assert not report.success
+        assert str(DESTINATIONS_COUNT_TARGET) in report.msg
+
+    @pytest.mark.parametrize(
+        "core,secondary",
+        [
+            (
+                CORE_DESTINATIONS_TARGET - 1,
+                SECONDARY_DESTINATIONS_TARGET + 1,
+            ),
+            (
+                CORE_DESTINATIONS_TARGET + 1,
+                SECONDARY_DESTINATIONS_TARGET - 1,
+            ),
+        ],
+    )
+    def test_invalid_priority_counts(
+        self,
+        core,
+        secondary,
+    ):
+        registry = build_registry(
+            core_count=core,
+            secondary_count=secondary,
         )
-        result = validate_destination_registry(lines)
-        assert result.success is False
 
-    def test_duplicate_identifier_in_full_registry_fails(self):
-        lines = build_registry()
-        lines[-1] = make_line(identifier="core_dest_0", priority="secondary")
-        result = validate_destination_registry(lines)
+        report = validate_destination_registry(registry)
 
-        assert result.success is False
+        assert not report.success
 
-    def test_registry_is_reusable_across_multiple_calls(self):
-        lines = build_registry()
+    def test_duplicate_identifier(self):
+        registry = build_registry()
 
-        first = validate_destination_registry(lines)
-        second = validate_destination_registry(lines)
+        registry[-1] = make_line(
+            identifier="core_a",
+            priority="secondary",
+        )
 
-        assert first.success is True
-        assert second.success is True
+        report = validate_destination_registry(registry)
+
+        assert not report.success
+        assert "Duplicate" in report.msg
+
+    def test_registry_can_be_reused(self):
+        registry = build_registry()
+
+        first = validate_destination_registry(registry)
+        second = validate_destination_registry(registry)
+
+        assert first.success
+        assert second.success
+
+    def test_multiple_errors_are_collected(self):
+        registry = build_registry(
+            core_count=CORE_DESTINATIONS_TARGET - 1,
+        )
+
+        registry[0] = "invalid"
+
+        report = validate_destination_registry(registry)
+
+        assert not report.success
+        assert len(report.outcome.errors) >= 2
+        

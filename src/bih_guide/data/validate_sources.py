@@ -18,7 +18,7 @@ from datetime import date
 from pathlib import Path
 from typing import Iterable, Mapping, Sequence
 from urllib.parse import urlparse
-from bih_guide.data.validation_report import ValidationOutcome, SourceValidationReport
+from src.bih_guide.data.validation_report import ValidationOutcome, SourceValidationReport
 
 MIN_APPROVED_SOURCES = 90
 
