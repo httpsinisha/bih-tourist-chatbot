@@ -14,11 +14,11 @@ from __future__ import annotations
 
 import argparse
 import csv
-from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
 from typing import Iterable, Mapping, Sequence
 from urllib.parse import urlparse
+from bih_guide.data.validation_report import ValidationOutcome, SourceValidationReport
 
 MIN_APPROVED_SOURCES = 90
 
@@ -54,35 +54,6 @@ ALLOWED_SOURCE_TYPES = frozenset(
 )
 
 ALLOWED_STATUSES = frozenset({"pending", "approved", "rejected", "unavailable"})
-
-
-@dataclass(frozen=True)
-class SourceValidationReport:
-    """Result of validating a complete source registry."""
-
-    errors: tuple[str, ...]
-    total_sources: int
-    approved_sources: int
-    covered_destinations: int
-    destination_count: int
-
-    @property
-    def success(self) -> bool:
-        """Return ``True`` when no validation errors were found."""
-
-        return not self.errors
-
-    @property
-    def msg(self) -> str:
-        """Return a concise human-readable result message."""
-
-        if self.success:
-            return (
-                "Validation successful: "
-                f"{self.approved_sources} approved sources cover "
-                f"{self.covered_destinations}/{self.destination_count} destinations."
-            )
-        return "\n".join(self.errors)
 
 
 def read_csv(path: Path) -> tuple[list[str], list[dict[str, str]]]:
@@ -222,7 +193,7 @@ def validate_sources(
         )
 
     return SourceValidationReport(
-        errors=tuple(errors),
+        outcome=ValidationOutcome(tuple(errors)),
         total_sources=len(source_rows),
         approved_sources=approved_count,
         covered_destinations=len(approved_destinations),
@@ -247,7 +218,7 @@ def validate_files(
         return report
 
     return SourceValidationReport(
-        errors=tuple(column_errors) + report.errors,
+        outcome=ValidationOutcome(tuple(column_errors) + report.outcome.errors),
         total_sources=report.total_sources,
         approved_sources=report.approved_sources,
         covered_destinations=report.covered_destinations,
