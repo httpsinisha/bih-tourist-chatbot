@@ -1,1 +1,34 @@
 source_id,destination_id,title,url,source_type,retrieved_at,status,notes
+SRC-SARAJEVO-001,sarajevo,Visit Sarajevo — zvanični turistički portal Kantona Sarajevo,https://www.visitsarajevo.ba/,official_tourism,2026-07-24,approved,Glavni zvanični izvor za turističku ponudu Sarajeva.
+SRC-SARAJEVO-002,sarajevo,Sarajevo Navigator — gradski turistički vodič,https://www.sarajevonavigator.ba/en,secondary_verified,2026-07-24,approved,Nezavisan drugi izvor za core destinaciju.
+SRC-ILIDZA-001,ilidza_i_vrelo_bosne,Visit Sarajevo — Vrelo Bosne i okolina Sarajeva,https://www.visitsarajevo.ba/bs/okolina-sarajeva/,official_tourism,2026-07-24,approved,Opisuje Vrelo Bosne i turističku zonu Ilidže.
+SRC-ILIDZA-002,ilidza_i_vrelo_bosne,KJU Zaštićena prirodna područja — Vrelo Bosne,https://zppks.ba/zasticena_podrucja/vrelo-bosne/,institution,2026-07-24,approved,Nezavisan institucionalni izvor za core destinaciju.
+SRC-ISTOCNO-SARAJEVO-001,istocno_sarajevo,Turistička organizacija Grada Istočno Sarajevo,https://istocnosarajevo.travel/,official_tourism,2026-07-24,approved,Zvanični portal lokalne turističke organizacije.
+SRC-ISTOCNO-SARAJEVO-002,istocno_sarajevo,Visit Srpska — Istočno Sarajevo,https://visitsrpska.org/en/grad-istocno-sarajevo/,official_tourism,2026-07-24,approved,Dodatni institucionalni turistički izvor.
+SRC-JAHORINA-001,pale_i_jahorina,Visit Srpska — Jahorina,https://visitsrpska.org/en/jahorina/,official_tourism,2026-07-24,approved,Opisuje Jahorinu kao turističku destinaciju Istočnog Sarajeva.
+SRC-JAHORINA-002,pale_i_jahorina,Olimpijski centar Jahorina — zvanična stranica,https://www.oc-jahorina.com/,institution,2026-07-24,approved,Nezavisan drugi izvor za core destinaciju.
+SRC-VISOKO-001,visoko,Visit Visoko — turistički portal,https://visitvisoko.com/,official_tourism,2026-07-24,approved,Turistički sadržaj o Visokom i lokalnim znamenitostima.
+SRC-BANJA-LUKA-001,banja_luka,Visit Srpska — Banja Luka,https://visitsrpska.org/en/banja-luka/,official_tourism,2026-07-24,approved,Zvanični turistički opis grada i okoline.
+SRC-BIJELJINA-001,bijeljina,Visit Srpska — Bijeljina,https://visitsrpska.org/en/welcome-to-bijeljina/,official_tourism,2026-07-24,approved,Zvanični turistički opis Bijeljine i Semberije.
+SRC-DOBOJ-001,doboj,Visit Srpska — Doboj,https://visitsrpska.org/en/doboj/,official_tourism,2026-07-24,approved,Zvanični turistički opis Doboja.
+SRC-ZVORNIK-001,zvornik,Visit Srpska — Zvornik,https://visitsrpska.org/en/zvornik/,official_tourism,2026-07-24,approved,Zvanični turistički opis Zvornika.
+SRC-LAKTASI-001,laktasi,Visit Srpska — Laktaši,https://visitsrpska.org/en/laktasi/,official_tourism,2026-07-24,approved,Zvanični turistički opis Laktaša.
+SRC-PRIJEDOR-001,prijedor,Visit Srpska — Prijedor,https://visitsrpska.org/en/prijedor/,official_tourism,2026-07-24,approved,Zvanični turistički opis Prijedora.
+SRC-TREBINJE-001,trebinje,Visit Srpska — Trebinje,https://visitsrpska.org/en/trebinje/,official_tourism,2026-07-24,approved,Zvanični turistički opis Trebinja.
+SRC-TREBINJE-002,trebinje,Turistička organizacija Grada Trebinja,https://gotrebinje.com/,official_tourism,2026-07-24,approved,Nezavisan drugi izvor za core destinaciju.
+SRC-BILECA-001,bileca,Visit Srpska — Bileća,https://visitsrpska.org/en/bileca-2/,official_tourism,2026-07-24,approved,Zvanični turistički opis Bileće.
+SRC-VISEGRAD-001,visegrad,Visit Srpska — Višegrad,https://visitsrpska.org/en/visegrad/,official_tourism,2026-07-24,approved,Zvanični turistički opis Višegrada.
+SRC-VLASENICA-001,vlasenica,Visit Srpska — Vlasenica,https://visitsrpska.org/en/vlasenica/,official_tourism,2026-07-24,approved,Zvanični turistički opis Vlasenice.
+SRC-GACKO-001,gacko,Visit Srpska — Gacko,https://visitsrpska.org/en/gacko/,official_tourism,2026-07-24,approved,Zvanični turistički opis Gacka.
+SRC-MRKONJIC-GRAD-001,mrkonjic_grad,Visit Srpska — Mrkonjić Grad,https://visitsrpska.org/en/mrkonjic-grad/,official_tourism,2026-07-24,approved,Zvanični turistički opis Mrkonjić Grada.
+SRC-NEVESINJE-001,nevesinje,Visit Srpska — Nevesinje,https://visitsrpska.org/en/nevesinje/,official_tourism,2026-07-24,approved,Zvanični turistički opis Nevesinja.
+SRC-ROGATICA-001,rogatica,Visit Srpska — Rogatica,https://visitsrpska.org/en/rogatica/,official_tourism,2026-07-24,approved,Zvanični turistički opis Rogatice.
+SRC-RIBNIK-001,ribnik,Visit Srpska — Ribnik,https://visitsrpska.org/en/ribnik/,official_tourism,2026-07-24,approved,Zvanični turistički opis Ribnika.
+SRC-SREBRENICA-001,srebrenica,Visit Srpska — Srebrenica,https://visitsrpska.org/en/srebrenica/,official_tourism,2026-07-24,approved,Zvanični turistički opis Srebrenice.
+SRC-FOCA-001,foca,Visit Srpska — Foča,https://visitsrpska.org/en/foca/,official_tourism,2026-07-24,approved,Zvanični turistički opis Foče; stari lokalni domen nije korišten.
+SRC-SIPOVO-001,sipovo_i_janjske_otoke,Visit Srpska — Šipovo,https://visitsrpska.org/en/sipovo/,official_tourism,2026-07-24,approved,"Opisuje Šipovo, rijeke Plivu i Janj i Janjske otoke."
+SRC-BLIDINJE-001,blidinje,Javno poduzeće Park prirode Blidinje,https://parkprirodeblidinje.ba/,institution,2026-07-24,approved,Zvanična stranica upravljača Parka prirode Blidinje.
+SRC-BLIDINJE-002,blidinje,Visit Blidinje — turistički portal parka,https://visit-blidinje.com/en/blidinje-nature-park/,official_tourism,2026-07-24,approved,Nezavisan drugi izvor za core destinaciju.
+SRC-SUTJESKA-001,tjentiste_i_np_sutjeska,JU Nacionalni park Sutjeska — zvanična stranica,https://sutjeskanp.com/,institution,2026-07-24,approved,Zvanična stranica parka sa sjedištem na Tjentištu.
+SRC-SUTJESKA-002,tjentiste_i_np_sutjeska,Visit Srpska — Nacionalni park Sutjeska,https://visitsrpska.org/en/national-park-sutjeska/,official_tourism,2026-07-24,approved,Nezavisan drugi izvor za core destinaciju.
+SRC-KOZARA-001,kozara_i_np_kozara,JU Nacionalni park Kozara — zvanična stranica,https://npkozara.com/,institution,2026-07-24,approved,Zvanična stranica Nacionalnog parka Kozara.
