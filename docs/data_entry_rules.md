@@ -1,8 +1,14 @@
 # Pravila unosa turističkih činjenica
 
+## Namjena
+
+Datoteka `data/raw/facts.jsonl` je strukturisana zbirka provjerenih i
+preformulisanih turističkih činjenica. Svaki red je jedan samostalan JSON
+objekat i jedna jasna tvrdnja ili preporuka.
+
 ## Obavezna polja
 
-Svaki red u `data/raw/facts.jsonl` mora biti jedan validan JSON objekat sa poljima:
+Svaki objekat mora sadržati:
 
 - `fact_id`
 - `destination_id`
@@ -12,7 +18,8 @@ Svaki red u `data/raw/facts.jsonl` mora biti jedan validan JSON objekat sa polji
 - `is_dynamic`
 - `last_verified_at`
 
-Polje `valid_until` koristi se samo kada postoji poznat datum do kojeg je dinamička informacija važeća.
+Polje `valid_until` dodaje se samo kada postoji poznat datum do kojeg važi
+dinamička informacija.
 
 ## Dozvoljene kategorije
 
@@ -25,48 +32,56 @@ Polje `valid_until` koristi se samo kada postoji poznat datum do kojeg je dinami
 - `practical`
 - `route`
 
-## Minimalna pokrivenost destinacije
+## Minimalna pokrivenost
 
-Svaka destinacija mora imati najmanje šest činjenica:
+Svaka od 72 destinacije mora imati najmanje šest činjenica:
 
-1. jedan osnovni opis;
-2. dvije atrakcije ili znamenitosti;
+1. osnovni opis;
+2. dvije turističke vrijednosti, kao što su znamenitosti, istorija ili priroda;
 3. jednu aktivnost;
 4. jednu preporuku za sezonu ili tip posjetioca;
 5. jednu vezu sa obližnjom destinacijom.
 
-## Pravila sadržaja
+Kompletni paket ima tačno šest činjenica po destinaciji, ukupno 432.
 
-- Jedan red sadrži jednu jasnu tvrdnju ili preporuku.
-- Tekst se piše svojim riječima; ne kopiraju se cijeli pasusi iz izvora.
-- Jezik je srpski, ijekavica, latinica.
-- Ne koriste se promotivni superlativi koji nisu podržani izvorom.
-- Svaki `source_id` mora postojati u `data/sources.csv`.
-- Ako izvor ne podržava tvrdnju dovoljno jasno, činjenica se ne unosi.
-- Istorijske i geografske tvrdnje iz sekundarnog izvora treba potvrditi drugim pouzdanim izvorom kada je moguće.
+## Pravila pisanja
+
+- Tekst se piše na srpskom jeziku, ijekavicom i latinicom.
+- Jedan red sadrži samo jednu jasnu tvrdnju ili preporuku.
+- Tekst mora biti između 30 i 500 znakova.
+- Ne kopiraju se cijeli pasusi sa izvora.
+- Ne koriste se marketinški superlativi kao činjenične tvrdnje.
+- Svaki `source_id` mora postojati u `data/sources.csv` i imati status
+  `approved`.
+- Nepotvrđena tvrdnja se ne unosi.
+- Za osjetljiva memorijalna mjesta koristi se neutralan i dostojanstven jezik.
+- Za planinarenje, rafting i slične aktivnosti navodi se potreba za provjerom
+  vremena, opreme, lokalnih pravila ili stručnog vodiča gdje je relevantno.
 
 ## Dinamičke informacije
 
-`is_dynamic` je `true` samo za podatke koji se mogu promijeniti, kao što su:
+`is_dynamic` je `true` samo za:
 
 - cijene;
 - radno vrijeme;
-- kontakt;
+- kontakte;
 - red vožnje;
-- datum događaja.
+- datume događaja;
+- druge podatke koji se često mijenjaju.
 
-Dinamička činjenica mora imati `valid_until` ili u tekstu jasnu napomenu da informaciju treba provjeriti prije putovanja.
+Dinamička činjenica mora imati `valid_until` ili jasnu napomenu da se podatak
+provjeri prije putovanja. Ovaj T08 paket ne sadrži dinamičke činjenice.
 
-## Konvencije ID vrijednosti
+## Konvencija ID vrijednosti
 
-Primjer:
+Primjeri:
 
 - `F-SARAJEVO-001`
 - `F-JAJCE-001`
-- `F-MARTIN-BROD-NP-UNA-001`
+- `F-MARTIN-BROD-I-NP-UNA-001`
 
 Brojač počinje od `001` zasebno za svaku destinaciju.
 
-## Dužina teksta
+## Datumi
 
-Radi usklađivanja sa kasnijom validacijom, tekst treba imati između 30 i 500 znakova.
+`last_verified_at` se zapisuje u ISO formatu `YYYY-MM-DD`.
