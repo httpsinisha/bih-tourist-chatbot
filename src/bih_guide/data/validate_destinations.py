@@ -8,10 +8,15 @@ Where the allowed values are defined by the Region, EntityType and Priority enum
 """
 
 from enum import Enum
-from typing import List, Set, Dict
+from typing import List, Set, Dict, Optional
 import re
+import argparse
+from pathlib import Path
+from typing import Sequence
+from src.bih_guide.data.validation_report import ValidationOutcome, DestinationValidationReport
 
 
+DESTINATIONS_FILE_PATH = Path("data/destination_registry.csv")
 CORE_DESTINATIONS_TARGET = 30
 SECONDARY_DESTINATIONS_TARGET = 42
 DESTINATIONS_COUNT_TARGET = 72
@@ -42,20 +47,10 @@ class Region(Enum):
             The matching Region enum member.
 
         Raises:
-            NotImplementedError: If the label does not match any known region.
+            ValueError: If the label does not match any known region.
         """
-        if label == "Sarajevo i okolina":
-            return Region.SARAJEVO
-        elif label == "Hercegovina i jugozapad":
-            return Region.HERZEGOVINA
-        elif label == "Srednja i sjeverna Bosna":
-            return Region.MIDDLE_NORTH_BOSNIA
-        elif label == "Sjeveroistočna i istočna Bosna":
-            return Region.NORTHEAST_NORTH_BOSNIA
-        elif label == "Krajina i zapadna Bosna":
-            return Region.WEST_BOSNIA
-        else:
-            raise NotImplementedError(f"{label} is not defined for region.")
+        return Region(label)
+
 
 
 class EntityType(Enum):
@@ -80,18 +75,9 @@ class EntityType(Enum):
             The matching EntityType enum member.
 
         Raises:
-            NotImplementedError: If the label does not match any known entity type.
+            ValueError: If the label does not match any known entity type.
         """
-        if label == "city":
-            return EntityType.CITY
-        elif label == "town":
-            return EntityType.TOWN
-        elif label == "nature_area":
-            return EntityType.NATURE_AREA
-        elif label == "mixed":
-            return EntityType.MIXED
-        else:
-            raise NotImplementedError(f"{label} is not defined for entity type.")
+        return EntityType(label)
 
 
 class Priority(Enum):
@@ -114,118 +100,57 @@ class Priority(Enum):
             The matching Priority enum member.
 
         Raises:
-            NotImplementedError: If the label does not match any known priority.
+            ValueError: If the label does not match any known priority.
         """
-        if label == "core":
-            return Priority.CORE
-        elif label == "secondary":
-            return Priority.SECONDARY
-        else:
-            raise NotImplementedError(f"{label} is not defined for priority.")
+        return Priority(label)
 
 
-class DestinationValidatorResult:
-    """
-    Outcome of a single validation step.
-
-    Attributes:
-        msg: Description of the result.
-        success: Indicator whether the validation passed.
-    """
-
-    def __init__(self, msg: str, success: bool):
-        """
-        Initialize a validation result.
-
-        Args:
-            msg: Description of the result.
-            success: Indicator whether the validation passed.
-        """
-        self.msg = msg
-        self.success = success
-
-    @staticmethod
-    def ok() -> "DestinationValidatorResult":
-        """
-        Build a successful validation result.
-
-        Returns:
-            A DestinationValidatorResult with success=True.
-        """
-        return DestinationValidatorResult("Validation successful.", True)
-
-    @staticmethod
-    def error(msg: str) -> "DestinationValidatorResult":
-        """
-        Build a failed validation result.
-
-        Args:
-            msg: Description of why validation failed.
-
-        Returns:
-            A DestinationValidatorResult with success=False.
-        """
-        return DestinationValidatorResult(msg, False)
-
-
-def validate_number_lines(count: int, target: int) -> DestinationValidatorResult:
+def validate_number_lines(count: int) -> Optional[str]:
     """
     Check that the total number of destination lines matches the target.
 
     Args:
         count: The actual number of lines found.
-        target: The expected number of lines.
 
     Returns:
-        DestinationValidatorResult.ok() if count == target, otherwise an
-        error result describing the mismatch.
+        None if count == target, otherwise str as error message.
     """
-    return (
-        DestinationValidatorResult.ok()
-        if count == target
-        else DestinationValidatorResult.error(f"Number of destinations must be {target}")
-    )
+    if count == DESTINATIONS_COUNT_TARGET:
+        return None
+    return f"Number of destinations must be {DESTINATIONS_COUNT_TARGET}, found {count}."
 
 
-def validate_core_count(count: int, target: int) -> DestinationValidatorResult:
+def validate_core_count(count: int) -> Optional[str]:
     """
     Check that the number of 'core' destinations matches the target.
 
     Args:
         count: The actual number of core destinations found.
-        target: The expected number of core destinations.
 
     Returns:
-        DestinationValidatorResult.ok() if count == target, otherwise an
-        error result describing the mismatch.
+        None if count == target, otherwise str as error message.
     """
-    return (
-        DestinationValidatorResult.ok()
-        if count == target
-        else DestinationValidatorResult.error(f"Number of core destinations must be {target}")
-    )
+    if count == CORE_DESTINATIONS_TARGET:
+        return None
+    return f"Number of core destinations must be {CORE_DESTINATIONS_TARGET}, found {count}."
 
 
-def validate_secondary_count(count: int, target: int) -> DestinationValidatorResult:
+def validate_secondary_count(count: int) -> Optional[str]:
     """
     Check that the number of 'secondary' destinations matches the target.
 
     Args:
         count: The actual number of secondary destinations found.
-        target: The expected number of secondary destinations.
 
     Returns:
-        DestinationValidatorResult.ok() if count == target, otherwise an
-        error result describing the mismatch.
+        None if count == target, otherwise str as error message.
     """
-    return (
-        DestinationValidatorResult.ok()
-        if count == target
-        else DestinationValidatorResult.error(f"Number of secondary destinations must be {target}")
-    )
+    if count == SECONDARY_DESTINATIONS_TARGET:
+        return None
+    return f"Number of secondary destinations must be {SECONDARY_DESTINATIONS_TARGET}, found {count}."
 
 
-def validate_line_format(line_number: int, parts: List[str]) -> DestinationValidatorResult:
+def validate_line_format(line_number: int, parts: List[str]) -> Optional[str]:
     """
     Check that a CSV line has exactly 5 comma-separated fields.
 
@@ -234,24 +159,20 @@ def validate_line_format(line_number: int, parts: List[str]) -> DestinationValid
         parts: The line already split on commas.
 
     Returns:
-        DestinationValidatorResult.ok() if the field count is correct,
-        otherwise an error result noting whether fields are missing or extra.
+        None if the field count is correct,
+        otherwise an error message noting whether fields are missing or extra.
     """
     parts_len = len(parts)
 
-    if parts_len != LINE_PARTS:
-        not_enough = parts_len < LINE_PARTS
-        msg = (
-            f"Some information missing on line {line_number}"
-            if not_enough
-            else f"Too much information on line {line_number}"
-        )
-        return DestinationValidatorResult.error(msg)
+    if parts_len == LINE_PARTS:
+        return None
 
-    return DestinationValidatorResult.ok()
+    if parts_len < LINE_PARTS:
+        return f"Some information missing on line {line_number}"
+    return f"Too much information on line {line_number}"
 
 
-def validate_identifier(identifier: str, destination_ids: Set[str]) -> DestinationValidatorResult:
+def validate_identifier(identifier: str, destination_ids: Set[str]) -> Optional[str]:
     """
     Check that a destination identifier is well-formed and unique.
 
@@ -263,24 +184,24 @@ def validate_identifier(identifier: str, destination_ids: Set[str]) -> Destinati
         destination_ids: Set of identifiers already seen so far; used to detect duplicates.
 
     Returns:
-        DestinationValidatorResult.ok() if the identifier is valid and not
-        already present in destination_ids, otherwise an error result.
+        None if the identifier is valid and not already present in
+        destination_ids, otherwise and error message.
     """
     if not re.fullmatch(IDENTIFIER_PATTERN, identifier):
-        return DestinationValidatorResult.error(
+        return (
             "Destination identifier must start with a lowercase letter, "
             "end with a lowercase letter, and contain only lowercase letters and underscores."
         )
 
     if identifier in destination_ids:
-        return DestinationValidatorResult.error(f"Duplicate destination identifier {identifier}.")
+        return f"Duplicate destination identifier {identifier}"
 
-    return DestinationValidatorResult.ok()
+    return None
 
 
 def validate_region_type_priority(
     region: str, entity_type: str, priority: str
-) -> DestinationValidatorResult:
+) -> Optional[str]:
     """
     Check that region, entity type, and priority are all recognized values.
 
@@ -290,17 +211,16 @@ def validate_region_type_priority(
         priority: Raw priority string from the CSV.
 
     Returns:
-        DestinationValidatorResult.ok() if all three values map to a known
-        enum member, otherwise an error result describing the first
-        unrecognized value.
+        None if all three values map to known enum member, otherwise an
+        error message describing the first unrecognized value.
     """
     try:
         Region.from_str(region)
         EntityType.from_str(entity_type)
         Priority.from_str(priority)
-        return DestinationValidatorResult.ok()
-    except NotImplementedError as e:
-        return DestinationValidatorResult.error(str(e))
+        return None
+    except ValueError as e:
+        return str(e)
 
 
 def validate_destination_line(
@@ -308,7 +228,7 @@ def validate_destination_line(
     line: str,
     destination_ids: Set[str],
     counts: Dict[str, int],
-) -> DestinationValidatorResult:
+) -> Optional[str]:
     """
     Validate a single CSV line and update shared tracking state.
 
@@ -326,69 +246,119 @@ def validate_destination_line(
             place when the line's priority is valid.
 
     Returns:
-        DestinationValidatorResult.ok() if the line is fully valid, otherwise
+        None if the line is fully valid, otherwise
         the first error result encountered.
     """
     parts = line.strip().split(",")
-    result = validate_line_format(line_number, parts)
-    if not result.success:
-        return result
+
+    error = validate_line_format(line_number, parts)
+    if error:
+        return error
 
     identifier, name, region, entity_type, priority = parts[0], parts[1], parts[2], parts[3], parts[4]
 
-    result = validate_identifier(identifier, destination_ids)
-    if not result.success:
-        return result
+    error = validate_identifier(identifier, destination_ids)
+    if error:
+        return error
     destination_ids.add(identifier)
 
-    result = validate_region_type_priority(region, entity_type, priority)
-    if not result.success:
-        return result
+    error = validate_region_type_priority(region, entity_type, priority)
+    if error:
+        return error
 
     if priority == Priority.CORE.value:
         counts["core"] += 1
     elif priority == Priority.SECONDARY.value:
         counts["secondary"] += 1
 
-    return DestinationValidatorResult.ok()
+    return None
 
-
-def validate_destination_registry(destination_lines: List[str]) -> DestinationValidatorResult:
+def validate_destination_registry(destination_lines: List[str]) -> DestinationValidationReport:
     """
-    Validate the full destination registry.
-
-    Checks, in order:
-      1. The total line count matches DESTINATIONS_COUNT_TARGET.
-      2. Every line individually passes validate_destination_line.
-      3. The number of 'core' destinations matches CORE_DESTINATIONS_TARGET.
-      4. The number of 'secondary' destinations matches SECONDARY_DESTINATIONS_TARGET.
+    Validate the full destination registry, collecting every found error.
 
     Args:
         destination_lines: All lines of the registry file, one destination
             per line.
 
     Returns:
-        DestinationValidatorResult.ok() if the whole registry is valid,
-        otherwise the first error result encountered.
+        A DestinationValidationReport describing the outcome, including
+        every error message collected and the final destination/core/
+        secondary counts.
+
     """
-    result = validate_number_lines(len(destination_lines), DESTINATIONS_COUNT_TARGET)
-    if not result.success:
-        return result
+    errors: List[str] = []
+    destination_count = len(destination_lines)
+
+    count_error = validate_number_lines(destination_count)
+    if count_error:
+        errors.append(count_error)
 
     destination_ids: Set[str] = set()
     counts: Dict[str, int] = {"core": 0, "secondary": 0}
 
     for i, line in enumerate(destination_lines):
-        result = validate_destination_line(i, line, destination_ids, counts)
-        if not result.success:
-            return result
+        line_error = validate_destination_line(i, line, destination_ids, counts)
+        if line_error:
+            errors.append(line_error)
 
-    result = validate_core_count(counts["core"], CORE_DESTINATIONS_TARGET)
-    if not result.success:
-        return result
 
-    result = validate_secondary_count(counts["secondary"], SECONDARY_DESTINATIONS_TARGET)
-    if not result.success:
-        return result
+    core_error = validate_core_count(counts["core"])
+    if core_error:
+        errors.append(core_error)
 
-    return DestinationValidatorResult.ok()
+    secondary_error = validate_secondary_count(counts["secondary"])
+    if secondary_error:
+        errors.append(secondary_error)
+
+    return DestinationValidationReport(
+        outcome=ValidationOutcome(tuple(errors)),
+        destination_count=destination_count,
+        core_count=counts["core"],
+        secondary_count=counts["secondary"]
+    )
+
+def build_parser() -> argparse.ArgumentParser:
+    """
+    Build the command-line parser.
+    """
+
+    parser = argparse.ArgumentParser(
+        description="Validate the destination registry."
+    )
+    parser.add_argument(
+        "--destinations",
+        type=Path,
+        default=DESTINATIONS_FILE_PATH,
+        help="Path to destination_registry.csv.",
+    )
+
+    return parser
+
+
+def main(argv: Sequence[str] | None = None) -> int:
+    """
+    Run validation and return a process exit code.
+    """
+
+    args = build_parser().parse_args(argv)
+
+    try:
+        with args.destinations.open(encoding="utf-8") as file:
+            destination_lines = [
+                line.strip()
+                for line in file
+                if line.strip()
+            ]
+    except OSError as exc:
+        print(f"Validation failed: {exc}")
+        return 1
+
+    report = validate_destination_registry(destination_lines[1:])
+
+    print(report.msg)
+    return 0 if report.success else 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

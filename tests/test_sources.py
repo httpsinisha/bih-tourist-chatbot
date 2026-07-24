@@ -15,6 +15,7 @@ from bih_guide.data.validate_sources import (
     validate_files,
     validate_sources,
 )
+from bih_guide.data.validation_report import ValidationOutcome
 
 
 def make_source(
@@ -50,7 +51,7 @@ def write_csv(path: Path, columns: tuple[str, ...], rows: list[dict[str, str]]) 
 
 
 def test_report_success_property_and_message():
-    report = SourceValidationReport((), 90, 90, 72, 72)
+    report = SourceValidationReport(ValidationOutcome(()), 90, 90, 72, 72)
     assert report.success is True
     assert "90 approved" in report.msg
 
