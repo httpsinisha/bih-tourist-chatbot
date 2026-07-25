@@ -37,6 +37,17 @@ MIN_FACT_PER_DESTINATION = 6
 MIN_TEXT_LENGTH = 30
 MAX_TEXT_LENGTH = 500
 
+ALLOWED_CATEGORIES = {
+    "description",
+    "attraction",
+    "history",
+    "nature",
+    "activity",
+    "food",
+    "practical",
+    "route",
+}
+
 
 def read_jsonl(path: Path) -> List[Tuple[int, Dict]]:
     """
@@ -87,21 +98,44 @@ def create_destination_fact_map(facts: List[Dict]) -> Dict[str, List[Dict]]:
 
     return destination_map
 
-def validate_required_fields(line_number, fact: Dict) -> Optional[str]:
+def validate_required_fields(
+    line_number: int,
+    fact: Dict,
+) -> Optional[str]:
     """
-    Check that a fact contains every field in REQUIRED_FIELDS.
+    Check that all required fields exist and contain usable values.
 
-    Args:
-        line_number: Line number in the source file.
-        fact: The fact record to validate.
-
-    Returns:
-        None if all required fields are occurring, otherwise an error
-        message naming the missing fields.
+    Boolean false is valid for is_dynamic, while None and blank strings
+    are treated as empty values.
     """
-    missing = [field for field in REQUIRED_FIELDS if field not in fact]
+    missing = [
+        field
+        for field in REQUIRED_FIELDS
+        if field not in fact
+    ]
+
     if missing:
-        return f"Fact on line {line_number} is missing: {', '.join(missing)}"
+        return (
+            f"Fact on line {line_number} is missing: "
+            f"{', '.join(sorted(missing))}"
+        )
+
+    empty = []
+
+    for field in REQUIRED_FIELDS:
+        value = fact[field]
+
+        if value is None:
+            empty.append(field)
+        elif isinstance(value, str) and not value.strip():
+            empty.append(field)
+
+    if empty:
+        return (
+            f"Fact on line {line_number} has empty required fields: "
+            f"{', '.join(sorted(empty))}."
+        )
+
     return None
 
 
@@ -157,6 +191,33 @@ def load_source_ids(path: Path) -> Set[str]:
     if not source_ids:
         raise ValueError(f"Source registry {path} contains no source IDs.")
     return source_ids
+
+
+
+def load_approved_source_ids(path: Path) -> Set[str]:
+    """
+    Load source IDs whose registry status is approved.
+
+    The full source-ID set is still loaded separately so the validator
+    can distinguish a missing source from an existing but unapproved one.
+    """
+    columns, rows = read_csv(path)
+
+    required_columns = {"source_id", "status"}
+    missing_columns = required_columns - set(columns)
+
+    if missing_columns:
+        raise ValueError(
+            f"Source registry {path} is missing columns: "
+            f"{', '.join(sorted(missing_columns))}."
+        )
+
+    return {
+        row["source_id"]
+        for row in rows
+        if row.get("source_id")
+        and row.get("status", "").strip().lower() == "approved"
+    }
 
 
 def validate_destination_id(destination_id: str, destination_ids: Set[str]) -> Optional[str]:
@@ -243,6 +304,7 @@ def validate_facts(
         destinations: Set[str],
         sources: Set[str],
         facts_path: Path = FACTS_FILE_PATH,
+        approved_sources: Optional[Set[str]] = None,
 ) -> FactValidationReport:
     """
     Validate the full facts registry, collecting every error and warning found.
@@ -270,12 +332,46 @@ def validate_facts(
 
     raw_facts = read_jsonl(facts_path)
     valid_facts: List[Dict] = []
+    seen_fact_ids: Set[str] = set()
 
     for line_number, fact in raw_facts:
         error = validate_required_fields(line_number, fact)
         if error:
             errors.append(error)
             continue
+
+        fact_id = fact["fact_id"]
+
+        if fact_id in seen_fact_ids:
+            errors.append(
+                f"Fact on line {line_number} has duplicate fact_id {fact_id}."
+            )
+        else:
+            seen_fact_ids.add(fact_id)
+
+        category = fact["category"]
+        if category not in ALLOWED_CATEGORIES:
+            errors.append(
+                f"Fact {fact_id} has unsupported category {category}."
+            )
+
+        if not isinstance(fact["is_dynamic"], bool):
+            errors.append(
+                f"Fact {fact_id}: is_dynamic must be a boolean."
+            )
+
+        last_verified_at = fact["last_verified_at"]
+        try:
+            parsed_date = date.fromisoformat(last_verified_at)
+            valid_iso_date = parsed_date.isoformat() == last_verified_at
+        except (TypeError, ValueError):
+            valid_iso_date = False
+
+        if not valid_iso_date:
+            errors.append(
+                f"Fact {fact_id}: last_verified_at must be a valid "
+                "YYYY-MM-DD date."
+            )
 
         error = validate_destination_id(fact["destination_id"], destinations)
         if error:
@@ -284,6 +380,15 @@ def validate_facts(
         error = validate_source_id(fact["source_id"], sources)
         if error:
             errors.append(error)
+
+        if (
+            approved_sources is not None
+            and fact["source_id"] not in approved_sources
+        ):
+            errors.append(
+                f"Fact {fact['fact_id']}: source_id "
+                f"{fact['source_id']} is not approved."
+            )
 
 
         normalized_text = normalize_text(fact["text"])
@@ -295,11 +400,56 @@ def validate_facts(
             continue
 
         fact["text"] = normalized_text
+
+        if (
+            isinstance(fact["is_dynamic"], bool)
+            and fact["is_dynamic"]
+        ):
+            valid_until = fact.get("valid_until")
+            has_verification_note = (
+                "provjer" in normalized_text.lower()
+            )
+
+            if valid_until:
+                try:
+                    parsed_valid_until = date.fromisoformat(
+                        valid_until
+                    )
+                    valid_until_is_valid = (
+                        parsed_valid_until.isoformat()
+                        == valid_until
+                    )
+                except (TypeError, ValueError):
+                    valid_until_is_valid = False
+
+                if not valid_until_is_valid:
+                    errors.append(
+                        f"Fact {fact['fact_id']}: valid_until must "
+                        "be a valid YYYY-MM-DD date."
+                    )
+
+            elif not has_verification_note:
+                errors.append(
+                    f"Fact {fact['fact_id']}: dynamic fact requires "
+                    "valid_until or a verification note."
+                )
+
         valid_facts.append(fact)
 
     destination_facts = create_destination_fact_map(valid_facts)
     facts_per_destination: Dict[str, int] = {}
     final_facts: List[Dict] = []
+
+    missing_destinations = sorted(
+        destinations - set(destination_facts)
+    )
+
+    for destination in missing_destinations:
+        facts_per_destination[destination] = 0
+        errors.append(
+            f"{destination} has 0 valid facts, required at least "
+            f"{MIN_FACT_PER_DESTINATION}."
+        )
 
     for destination, facts_for_destination in destination_facts.items():
         deduplicated, removed_count = deduplicate_destination_facts(facts_for_destination)
@@ -336,23 +486,53 @@ def save_report(report: FactValidationReport, output_path: Path):
         json.dump(report.to_dict(), f, ensure_ascii=False, indent=2)
 
 
-def main() -> int:
+def build_parser() -> argparse.ArgumentParser:
+    """Build the command-line parser for fact validation."""
+    parser = argparse.ArgumentParser(
+        description="Validate the facts registry."
+    )
+    parser.add_argument(
+        "--facts",
+        type=Path,
+        default=FACTS_FILE_PATH,
+        help="Path to facts.jsonl",
+    )
+    parser.add_argument(
+        "--destinations",
+        type=Path,
+        default=DESTINATIONS_PATH,
+        help="Path to destination_registry.csv",
+    )
+    parser.add_argument(
+        "--sources",
+        type=Path,
+        default=SOURCE_PATH,
+        help="Path to sources.csv",
+    )
+    parser.add_argument(
+        "--report",
+        "--report-out",
+        dest="report_out",
+        type=Path,
+        default=REPORT_OUTPUT_PATH,
+        help="Where to write the JSON report",
+    )
+    return parser
+
+
+def main(argv: Optional[List[str]] = None) -> int:
     """
     Run fact validation end to end and write a JSON report.
 
     Returns:
-        Exit code: 0 if there are no critical errors, 1 otherwise.
+        Exit code 0 when there are no critical errors, otherwise 1.
     """
-    parser = argparse.ArgumentParser(description="Validate the facts registry.")
-    parser.add_argument("--facts", type=Path, default=FACTS_FILE_PATH, help="Path to facts.jsonl")
-    parser.add_argument("--destinations", type=Path, default=DESTINATIONS_PATH, help="Path to destination_registry.csv")
-    parser.add_argument("--sources", type=Path, default=SOURCE_PATH, help="Path to sources.csv")
-    parser.add_argument("--report-out", type=Path, default=REPORT_OUTPUT_PATH, help="Where to write the JSON report")
-    args = parser.parse_args()
+    args = build_parser().parse_args(argv)
 
     report = validate_facts(
         destinations=load_destination_ids(args.destinations),
         sources=load_source_ids(args.sources),
+        approved_sources=load_approved_source_ids(args.sources),
         facts_path=args.facts,
     )
 
