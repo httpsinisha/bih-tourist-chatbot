@@ -42,7 +42,9 @@ Svaka od 72 destinacije mora imati najmanje šest činjenica:
 4. jednu preporuku za sezonu ili tip posjetioca;
 5. jednu vezu sa obližnjom destinacijom.
 
-Kompletni paket ima tačno šest činjenica po destinaciji, ukupno 432.
+Početna verzija skupa imala je tačno šest činjenica po destinaciji,
+ukupno 432. Skup se naknadno proširuje radi izgradnje RAG baze, ali svaka
+destinacija i dalje mora imati najmanje šest validnih činjenica.
 
 ## Pravila pisanja
 
