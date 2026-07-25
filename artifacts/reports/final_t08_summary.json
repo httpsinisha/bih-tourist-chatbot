@@ -1,0 +1,27 @@
+{
+  "success": true,
+  "destination_count": 72,
+  "source_count": 397,
+  "fact_count": 1788,
+  "word_count": 25190,
+  "planned_chunk_count": 250,
+  "core_destinations": 30,
+  "secondary_destinations": 42,
+  "expanded_secondary_destinations": [
+    "fojnica",
+    "istocno_sarajevo",
+    "pocitelj",
+    "tomislavgrad"
+  ],
+  "destinations_below_target": [],
+  "category_totals": {
+    "activity": 272,
+    "attraction": 322,
+    "description": 142,
+    "food": 49,
+    "history": 291,
+    "nature": 249,
+    "practical": 257,
+    "route": 206
+  }
+}

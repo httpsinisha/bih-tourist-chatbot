@@ -1,0 +1,73 @@
+destination_id,name,priority,target_words,actual_words,fact_count,category_count,planned_chunks,status
+sarajevo,Sarajevo,core,340,434,30,8,4,pass
+ilidza_i_vrelo_bosne,Ilidža i Vrelo Bosne,core,340,461,30,7,4,pass
+istocno_sarajevo,Istočno sarajevo,secondary,340,363,24,8,4,pass
+pale_i_jahorina,Pale i Jahorina,core,340,434,30,8,4,pass
+trnovo_i_bjelasnica,Trnovo i Bjelašnica,secondary,260,324,20,8,3,pass
+visoko,Visoko,core,340,401,30,6,4,pass
+fojnica,Fojnica,secondary,340,366,24,8,4,pass
+kresevo,Kreševo,secondary,260,292,20,7,3,pass
+kiseljak,Kiseljak,secondary,260,291,20,8,3,pass
+mostar,Mostar,core,340,421,30,7,4,pass
+blagaj,Blagaj,core,340,421,30,8,4,pass
+pocitelj,Počitelj,secondary,340,345,25,6,4,pass
+capljina,Čapljina,secondary,260,319,22,8,3,pass
+ljubuski_i_vodopad_kravica,Ljubuški i vodopad Kravica,core,340,350,26,7,4,pass
+medjugorje,Međugorje,secondary,260,284,22,6,3,pass
+citluk,Čitluk,secondary,260,305,22,8,3,pass
+neum,Neum,core,340,450,30,8,4,pass
+stolac,Stolac,secondary,260,328,22,8,3,pass
+trebinje,Trebinje,core,340,441,30,8,4,pass
+bileca,Bileća,secondary,260,314,22,8,3,pass
+gacko,Gacko,secondary,260,282,22,8,3,pass
+nevesinje,Nevesinje,secondary,260,290,20,6,3,pass
+konjic,Konjic,core,340,447,30,8,4,pass
+jablanica,Jablanica,secondary,260,306,22,8,3,pass
+prozor_rama,Prozor-Rama,secondary,260,304,22,8,3,pass
+livno,Livno,secondary,260,294,20,8,3,pass
+tomislavgrad,Tomislavgrad,secondary,340,374,24,8,4,pass
+kupres,Kupres,secondary,260,311,22,8,3,pass
+posusje,Posušje,core,340,449,30,7,4,pass
+grude,Grude,secondary,260,305,22,8,3,pass
+siroki_brijeg,Široki Brijeg,secondary,260,304,22,8,3,pass
+blidinje,Blidinje,core,340,365,26,7,4,pass
+travnik,Travnik,core,340,356,26,7,4,pass
+jajce,Jajce,core,340,462,32,7,4,pass
+donji_vakuf,Donji Vakuf,secondary,260,304,20,8,3,pass
+bugojno,Bugojno,secondary,260,304,22,8,3,pass
+vitez,Vitez,secondary,260,296,20,8,3,pass
+zenica,Zenica,core,340,417,30,6,4,pass
+kakanj,Kakanj,core,340,429,30,7,4,pass
+tesanj,Tešanj,secondary,260,315,22,8,3,pass
+maglaj,Maglaj,secondary,260,268,22,6,3,pass
+doboj,Doboj,core,340,374,27,8,4,pass
+prokosko_jezero,Prokoško jezero,core,340,404,29,8,4,pass
+tuzla,Tuzla,core,340,443,30,7,4,pass
+lukavac,Lukavac,secondary,260,296,20,7,3,pass
+gracanica,Gračanica,secondary,260,286,22,7,3,pass
+srebrenik,Srebrenik,secondary,260,289,22,7,3,pass
+gradacac,Gradačac,secondary,260,285,22,8,3,pass
+brcko,Brčko,secondary,260,275,22,8,3,pass
+bijeljina,Bijeljina,core,340,374,27,8,4,pass
+zvornik,Zvornik,secondary,260,280,22,7,3,pass
+srebrenica,Srebrenica,secondary,260,285,22,7,3,pass
+vlasenica,Vlasenica,secondary,260,281,22,6,3,pass
+visegrad,Višegrad,core,340,395,29,7,4,pass
+rogatica,Rogatica,secondary,260,292,22,8,3,pass
+foca,Foča,core,340,413,29,7,4,pass
+tjentiste_i_np_sutjeska,Tjentište i NP Sutjeska,core,340,354,26,8,4,pass
+gorazde,Goražde,secondary,260,314,22,8,3,pass
+banja_luka,Banja Luka,core,340,428,29,8,4,pass
+laktasi,Laktaši,secondary,260,276,22,8,3,pass
+prijedor,Prijedor,secondary,260,286,22,8,3,pass
+kozara_i_np_kozara,Kozara i NP Kozara,core,340,389,27,6,4,pass
+sanski_most,Sanski Most,secondary,260,317,22,7,3,pass
+kljuc,Ključ,secondary,260,297,22,8,3,pass
+bihac,Bihać,core,340,371,26,8,4,pass
+bosanska_krupa,Bosanska Krupa,core,340,379,27,7,4,pass
+cazin,Cazin,secondary,260,286,22,6,3,pass
+velika_kladusa,Velika Kladuša,secondary,260,282,22,8,3,pass
+martin_brod_i_np_una,Martin Brod i NP Una,core,340,463,30,7,4,pass
+sipovo_i_janjske_otoke,Šipovo i Janjske otoke,core,340,469,33,7,4,pass
+mrkonjic_grad,Mrkonjić Grad,secondary,260,291,22,7,3,pass
+ribnik,Ribnik,core,340,490,32,8,4,pass
