@@ -346,3 +346,162 @@ class TestValidateFactsEndToEnd:
         report = validate_facts(destinations=set(), sources=set(), facts_path=path)
 
         assert report.success is True
+
+
+def test_duplicate_fact_id_is_critical_error(tmp_path):
+    facts = build_valid_facts_for("sarajevo")
+    facts[1]["fact_id"] = facts[0]["fact_id"]
+    path = write_jsonl(tmp_path, facts)
+
+    report = validate_facts(
+        destinations={"sarajevo"},
+        sources={"src1"},
+        facts_path=path,
+    )
+
+    assert report.success is False
+    assert any(
+        "duplicate fact_id" in error.lower()
+        for error in report.outcome.errors
+    )
+
+
+def test_invalid_category_is_critical_error(tmp_path):
+    facts = build_valid_facts_for("sarajevo")
+    facts[0]["category"] = "shopping"
+    path = write_jsonl(tmp_path, facts)
+
+    report = validate_facts(
+        destinations={"sarajevo"},
+        sources={"src1"},
+        facts_path=path,
+    )
+
+    assert report.success is False
+    assert any(
+        "unsupported category" in error.lower()
+        for error in report.outcome.errors
+    )
+
+
+def test_is_dynamic_must_be_boolean(tmp_path):
+    facts = build_valid_facts_for("sarajevo")
+    facts[0]["is_dynamic"] = "false"
+    path = write_jsonl(tmp_path, facts)
+
+    report = validate_facts(
+        destinations={"sarajevo"},
+        sources={"src1"},
+        facts_path=path,
+    )
+
+    assert report.success is False
+    assert any(
+        "is_dynamic must be a boolean" in error.lower()
+        for error in report.outcome.errors
+    )
+
+
+def test_last_verified_at_must_be_valid_iso_date(tmp_path):
+    facts = build_valid_facts_for("sarajevo")
+    facts[0]["last_verified_at"] = "25-07-2026"
+    path = write_jsonl(tmp_path, facts)
+
+    report = validate_facts(
+        destinations={"sarajevo"},
+        sources={"src1"},
+        facts_path=path,
+    )
+
+    assert report.success is False
+    assert any(
+        "last_verified_at must be a valid yyyy-mm-dd date" in error.lower()
+        for error in report.outcome.errors
+    )
+
+def test_blank_required_field_is_critical_error(tmp_path):
+    facts = build_valid_facts_for("sarajevo")
+    facts[0]["source_id"] = "   "
+    path = write_jsonl(tmp_path, facts)
+
+    report = validate_facts(
+        destinations={"sarajevo"},
+        sources={"src1"},
+        facts_path=path,
+    )
+
+    assert report.success is False
+    assert any(
+        "empty required fields" in error.lower()
+        for error in report.outcome.errors
+    )
+
+
+def test_dynamic_fact_requires_valid_until_or_verification_note(tmp_path):
+    facts = build_valid_facts_for("sarajevo")
+    facts[0]["is_dynamic"] = True
+    facts[0]["text"] = (
+        "Radno vrijeme lokaliteta može se mijenjati tokom turističke sezone."
+    )
+    path = write_jsonl(tmp_path, facts)
+
+    report = validate_facts(
+        destinations={"sarajevo"},
+        sources={"src1"},
+        facts_path=path,
+    )
+
+    assert report.success is False
+    assert any(
+        "dynamic fact requires valid_until or a verification note"
+        in error.lower()
+        for error in report.outcome.errors
+    )
+
+
+def test_fact_source_must_be_approved(tmp_path):
+    facts = build_valid_facts_for("sarajevo")
+    path = write_jsonl(tmp_path, facts)
+
+    report = validate_facts(
+        destinations={"sarajevo"},
+        sources={"src1"},
+        approved_sources=set(),
+        facts_path=path,
+    )
+
+    assert report.success is False
+    assert any(
+        "source_id src1 is not approved" in error.lower()
+        for error in report.outcome.errors
+    )
+
+
+def test_destination_missing_all_facts_is_critical_error(tmp_path):
+    facts = build_valid_facts_for("sarajevo")
+    path = write_jsonl(tmp_path, facts)
+
+    report = validate_facts(
+        destinations={"sarajevo", "mostar"},
+        sources={"src1"},
+        approved_sources={"src1"},
+        facts_path=path,
+    )
+
+    assert report.success is False
+    assert report.facts_per_destination["mostar"] == 0
+    assert any(
+        "mostar has 0 valid facts" in error.lower()
+        for error in report.outcome.errors
+    )
+
+
+def test_report_cli_alias_is_supported(tmp_path):
+    from src.bih_guide.data.validate_facts import build_parser
+
+    report_path = tmp_path / "report.json"
+    args = build_parser().parse_args(
+        ["--report", str(report_path)]
+    )
+
+    assert args.report_out == report_path
