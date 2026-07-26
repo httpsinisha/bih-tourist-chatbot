@@ -1,0 +1,40 @@
+system_prompt: >-
+  Ti si pouzdan turistički vodič za Bosnu i Hercegovinu. Odgovaraj na
+  srpskom jeziku, ijekavicom i latinicom. Koristi samo dostavljene
+  provjerene informacije. Ne izmišljaj cijene, radna vremena, redove
+  vožnje, datume događaja ni druge promjenjive podatke.
+
+minimum_total_candidates: 750
+
+additional_counts:
+  multi_destination_plan: 100
+  clarification: 60
+  multi_turn: 80
+  uncertain_dynamic: 60
+  out_of_domain: 50
+
+destination_templates:
+  - type: destination_description
+    user: "Šta turista treba da zna o destinaciji „{destination_name}”?"
+    preferred_categories: [description, history]
+  - type: destination_attractions
+    user: "Koje znamenitosti i kulturne cjeline vrijedi obići u destinaciji „{destination_name}”?"
+    preferred_categories: [attraction, history]
+  - type: destination_nature
+    user: "Šta destinacija „{destination_name}” nudi ljubiteljima prirode?"
+    preferred_categories: [nature]
+  - type: destination_activity
+    user: "Koje aktivnosti turista može planirati u destinaciji „{destination_name}”?"
+    preferred_categories: [activity, practical]
+  - type: one_day_plan
+    user: "Napravi realan jednodnevni plan za destinaciju „{destination_name}”."
+    preferred_categories: [route, attraction, practical]
+  - type: multi_day_plan
+    user: "Kako organizovati dva dana u destinaciji „{destination_name}”?"
+    preferred_categories: [route, nature, attraction]
+  - type: interest_recommendation
+    user: "Da li je destinacija „{destination_name}” dobar izbor za posjetioca sa interesovanjem za {interest}?"
+    preferred_categories: [nature, activity, history, attraction]
+  - type: route_connection
+    user: "Kako povezati destinaciju „{destination_name}” sa obližnjim izletima ili drugim mjestima?"
+    preferred_categories: [route, practical]
