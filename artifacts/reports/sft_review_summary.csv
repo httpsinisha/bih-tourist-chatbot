@@ -1,0 +1,7 @@
+﻿category,target_count,approved_count
+destination,300,300
+plan_route,150,150
+multi_turn,60,60
+uncertain_dynamic,50,50
+out_of_domain,40,40
+TOTAL,600,600
